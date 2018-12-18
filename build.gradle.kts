@@ -5,6 +5,12 @@ tasks {
         description = "Runs the :assemble task"
     }
 
+    register("clean") {
+        dependsOn(gradle.includedBuild("sts-klient").task(":clean"))
+        group = "Application"
+        description = "Runs the :clean task"
+    }
+
     register("check") {
         dependsOn(gradle.includedBuild("sts-klient").task(":check"))
         group = "Application"
