@@ -1,3 +1,12 @@
+plugins {
+    id("io.codearte.nexus-staging") version "0.12.0"
+}
+
+nexusStaging {
+    username = System.getenv("OSSRH_JIRA_USERNAME")
+    password = System.getenv("OSSRH_JIRA_PASSWORD")
+    packageGroup = "no.nav"
+}
 
 tasks {
     register("assemble") {
