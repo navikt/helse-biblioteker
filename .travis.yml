@@ -1,0 +1,38 @@
+sudo: required
+language: java
+jdk:
+- openjdk11
+before_install:
+- openssl aes-256-cbc -K $encrypted_5f8525d1fd76_key -iv $encrypted_5f8525d1fd76_iv
+  -in travis/codesigning.asc.enc -out travis/codesigning.asc -d
+- gpg --fast-import travis/codesigning.asc
+- rm "${JAVA_HOME}/lib/security/cacerts"
+- ln -s /etc/ssl/certs/java/cacerts "${JAVA_HOME}/lib/security/cacerts"
+- export RELEASE_VERSION="1.$(TZ="Europe/Oslo" date +%Y.%m.%d-%H.%M).$(git rev-parse
+  --short=12 HEAD)"
+script:
+- sed s/^version.*/version='"'$RELEASE_VERSION'"'/ sts-klient/build.gradle.kts > sts-klient/build.gradle.new
+  && mv sts-klient/build.gradle.new sts-klient/build.gradle.kts
+- "./gradlew check"
+- "./gradlew build"
+- |
+  set -e
+  if [ "${TRAVIS_PULL_REQUEST}" = "false" ] && [ "${TRAVIS_BRANCH}" = "master" ]; then
+   ./gradlew publish --info closeAndReleaseRepository
+  fi
+before_cache:
+- rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+- rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+cache:
+  directories:
+  - "$HOME/.gradle/caches/"
+  - "$HOME/.gradle/wrapper/"
+env:
+  global:
+  - GPG_KEY_NAME=navikt
+  - OSSRH_JIRA_USERNAME=navikt
+  - secure: URciVEqKPhKZaDMt2oa89SHe58mSxpjbSfBAJUKI9/kcrfhiHzKpQiW4qipjtCM+fi7e/ItyvckgoccDP1wRH4tR6j0P2XxpLaiTgXe+e7c+/oyLzxoRJMP1hlpc3EPt8f1yfHmUAw989HXicCadC/3dkHdqpXJyrtYKvLO0H/nZKvR6du4iSt4aMmeQKol8GtRWsNsUAKgJuC6t4JUnAOKvhGW+1e3Tze7ywmc8Vvd6y69vT4d1uUq0t/fw02mij9iPXE7ajacAXm2v4aQXTXrreLul9edkCF2wekDDfKLig7Jw7tU235kLGaa4e1nHhpsLnyILJSg1ad4YwTrhxp+fx8OdbgWypYrhxW0lEzwZkymcO3Sglkxvmx3XC5VVFmAR2oK00a03VEc6YCMGzZlk3dzKBApLW0apUXRYv1xAAJ/0BmLRhqbpR4DKiEGDMSiURAL7yt7NCq2fkAj5DUwqcE0McszovdTmeP+pMnjsxpYxVoko3ShQ08s0qzHdIIYvbcLOcqaXDfDP6Xy/matfOowhnQzElTBFpB132Ms5UyuEC/wN979DX7zxbx8OAGvOyyeRhV/LOV+VRtadSEtAuDX5MVmz4g5m0msVzXvhp2U35CV5e/8oxf2fsn0/dmxQ5rG54OaLZrMLTljOCW9pzi390KXn30c1VL+NY2s=
+  - secure: HBd6gCnpSZAK1yHIu98PGD//C+pFAjYus3LflrMGehZW4qct3B8aApTS80cWKPXNYCyzILl8DORndEBfQMxJR6d58kapoisiJ7Fs+ziclstPunuIMdT1BgS/+ZnnUgD/yDkOMFCKHelL2MEXEE79aZinJXLMG7hz1AWutbggQV/4oNS0mHfOkGVpC3C84Jhig3WB+qrKaH1NbuXTqMmsaI2hW9xFdXv4zJO/tsjjM/kJ+K22xU0h4vOCVVrDYbE/SzED+of9ccChnG828loIHU5n98DDo0awO5JO6IpyEYpC+j3+/JulCBUP51IzzynyLApFhFq9iiAW2vw2iFbWeLXjpTsK8N/VcwjlQE6hjauTdAnlV1gOte2IgKCjtEz/u4NXN5nqu+xleC6OqNiDtk6CfEAwu14hEHgabxzD9u6ZUnT3DC1qI1PgHeyfBRRMuqIJ4S8WkcGCMEG8Rjsb5FhgZlt0IIzoYQ2WY8cKoB6toSP7GiAli0/BK36afgOIIfyDrVsBxBkR5Ri9J64Mxr1nIJ1VmUtDhbbL5Di97O2Qb7nEZh2K+x7KY9BueNyhoitTmv/dWyE99mLqHE9bZWu8kUh1R0Ecb4VEj6HCrHuohRDoNGbpRnWmtSPx2h6cb68+5eViaU1vDseSeODhx9XN1+nAOGHZCzFwVAnkkKA=
+notifications:
+  slack:
+    secure: ayHx5iQvMyYv+GykHOXHqKJ/MkGKGhSkGc3UbURO3jA4ng5sB0qcGBjncs2dDukyIjKazVJPUB8bxTmhXNXmeevbwk4UwR0f382OONpUcY9O8/1LUgH81bqommb+gjsEGKHqPL+w9dFT6O1cvsLO9+hyIIvf97rw18hZq6UmGO2Ls+pqNI9j6FlDUjBq/l2SntLtKHhQjEN4SUzSBTU0UlUhq0hbmVLIFCMTuEc8xkucTrK9Czp+u6deh/T5fJDtN+udx3x2CqIic1LdpQPv5s9ikuYS+wNDn9V3BAzHQ+8N3+jBs+FUhnE5ezu+Dn5POY0oekE054HGMdJEyBWZWwedeNmVt8QrzLlauQn2QyI4OO9j+ZHTN5XrGXGZf54E3M7gXwktH7qlJ80suTkMR+s9+qRZSM9QR20thuSq/aIpKk8XQrU/CQNpyogGz+BSVuML7CAe2EOIGusSUrm3jU33fUck4wW0Pw8FVWd+rmluNTr87OAaFSaoISqYx7m03LMdvXfylB5mWHn+WwBjnWmz9cpcGvXV2/IXN1+pCBldQRYsk4c73ok/Fyfk12jL17QfxH98meCby6W+ZIXcjNNjN8U7I3n7JrFg3VLXXUCGMvZOWUOf0vg4ucX1SC5ny4qIkyZRsUmXOEgWCCCClxeSBtykgQWJn2+wHEqJSBw=
