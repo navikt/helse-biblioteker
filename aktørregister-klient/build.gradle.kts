@@ -8,7 +8,7 @@ val mockkVersion = "1.8.12.kotlin13"
 val junitJupiterVersion = "5.3.1"
 
 group = "no.nav.helse"
-val artifact = "aktørregister-klient"
+val artifact = "aktorregister-klient"
 // version is placed by travis
 version = 1
 val artifactDescription = "Libraries for Helse"

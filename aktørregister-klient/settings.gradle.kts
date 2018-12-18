@@ -1,1 +1,1 @@
-rootProject.name = "aktørregister-klient"
+rootProject.name = "aktorregister-klient"
