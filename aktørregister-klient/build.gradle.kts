@@ -18,8 +18,9 @@ val scmUrl = "scm:git:https://github.com/navikt/helse-biblioteker.git"
 plugins {
    kotlin("jvm") version "1.3.11"
    `java-library`
-   `maven-publish`
    signing
+   id("io.codearte.nexus-staging") version "0.12.0"
+   id("de.marcphilipp.nexus-publish") version "0.1.1"
    id("org.jetbrains.dokka") version "0.9.17"
 }
 
@@ -133,21 +134,13 @@ publishing {
          }
       }
    }
+}
 
-   repositories {
-      maven {
-         credentials {
-            username = System.getenv("OSSRH_JIRA_USERNAME")
-            password = System.getenv("OSSRH_JIRA_PASSWORD")
-         }
-         val version = "${project.version}"
-         url = if (version.endsWith("-SNAPSHOT")) {
-            uri("https://oss.sonatype.org/content/repositories/snapshots")
-         } else {
-            uri("https://oss.sonatype.org/service/local/staging/deploy/maven2/")
-         }
-      }
-   }
+nexusStaging {
+   username = System.getenv("OSSRH_JIRA_USERNAME")
+   password = System.getenv("OSSRH_JIRA_PASSWORD")
+   packageGroup = "no.nav"
+   stagingProfileId = "3a10cafa813c47"
 }
 
 ext["signing.gnupg.keyName"] = System.getenv("GPG_KEY_NAME")
