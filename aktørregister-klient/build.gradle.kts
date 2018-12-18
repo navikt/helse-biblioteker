@@ -21,7 +21,6 @@ plugins {
    `maven-publish`
    signing
    id("org.jetbrains.dokka") version "0.9.17"
-   id("io.codearte.nexus-staging") version "0.12.0"
 }
 
 buildscript {
@@ -37,7 +36,7 @@ dependencies {
 
    compile("org.json:json:$orgJsonVersion")
    compile("com.github.kittinunf.fuel:fuel:$fuelVersion")
-   compile("no.nav.helse:sts-klient:$version")
+   compile("helse-biblioteker:sts-klient:$version")
 
    testCompile("io.mockk:mockk:$mockkVersion")
    testCompile("com.github.tomakehurst:wiremock:$wireMockVersion")
@@ -158,10 +157,4 @@ ext["signing.gnupg.useLegacyGpg"] = true
 signing {
    useGpgCmd()
    sign(publishing.publications["mavenJava"])
-}
-
-nexusStaging {
-   username = System.getenv("OSSRH_JIRA_USERNAME")
-   password = System.getenv("OSSRH_JIRA_PASSWORD")
-   packageGroup = "no.nav"
 }

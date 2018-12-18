@@ -1,44 +1,32 @@
+plugins {
+    id("io.codearte.nexus-staging") version "0.12.0"
+}
+
+nexusStaging {
+    username = System.getenv("OSSRH_JIRA_USERNAME")
+    password = System.getenv("OSSRH_JIRA_PASSWORD")
+    packageGroup = "no.nav"
+}
+
 tasks {
     register("assemble") {
-        dependsOn(gradle.includedBuild("aktorregister-klient").task(":assemble"))
-        dependsOn(gradle.includedBuild("sts-klient").task(":assemble"))
-        group = "Application"
-        description = "Runs the :assemble task"
+        dependsOn(gradle.includedBuilds.map { it.task(":assemble") })
     }
 
     register("clean") {
-        dependsOn(gradle.includedBuild("aktorregister-klient").task(":clean"))
-        dependsOn(gradle.includedBuild("sts-klient").task(":clean"))
-        group = "Application"
-        description = "Runs the :clean task"
+        dependsOn(gradle.includedBuilds.map { it.task(":clean") })
     }
 
     register("check") {
-        dependsOn(gradle.includedBuild("aktorregister-klient").task(":check"))
-        dependsOn(gradle.includedBuild("sts-klient").task(":check"))
-        group = "Application"
-        description = "Runs the :check task"
+        dependsOn(gradle.includedBuilds.map { it.task(":check") })
     }
 
     register("build") {
-        dependsOn(gradle.includedBuild("aktorregister-klient").task(":build"))
-        dependsOn(gradle.includedBuild("sts-klient").task(":build"))
-        group = "Application"
-        description = "Runs the :build task"
+        dependsOn(gradle.includedBuilds.map { it.task(":build") })
     }
 
     register("publish") {
-        dependsOn(gradle.includedBuild("aktorregister-klient").task(":publish"))
-        dependsOn(gradle.includedBuild("sts-klient").task(":publish"))
-        group = "Application"
-        description = "Runs the :publish task"
-    }
-
-    register("closeAndReleaseRepository") {
-        dependsOn(gradle.includedBuild("aktorregister-klient").task(":closeAndReleaseRepository"))
-        dependsOn(gradle.includedBuild("sts-klient").task(":closeAndReleaseRepository"))
-        group = "Application"
-        description = "Runs the :closeAndReleaseRepository task"
+        dependsOn(gradle.includedBuilds.map { it.task(":publish") })
     }
 }
 
