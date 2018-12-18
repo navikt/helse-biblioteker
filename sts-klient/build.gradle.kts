@@ -11,7 +11,7 @@ group = "no.nav.helse"
 val artifact = "sts-klient"
 // version is placed by travis
 version = 1
-val description = "Libraries for Helse"
+val artifactDescription = "Libraries for Helse"
 val repoUrl = "https://github.com/navikt/helse-biblioteker.git"
 val scmUrl = "scm:git:https://github.com/navikt/helse-biblioteker.git"
 
@@ -104,7 +104,7 @@ publishing {
 
          pom {
             name.set(artifact)
-            description.set(description)
+            description.set(artifactDescription)
             url.set(repoUrl)
             withXml {
                asNode().appendNode("packaging", "jar")
