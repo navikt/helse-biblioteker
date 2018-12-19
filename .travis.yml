@@ -11,7 +11,7 @@ before_install:
 - export RELEASE_VERSION="1.$(TZ="Europe/Oslo" date +%Y.%m.%d-%H.%M).$(git rev-parse
   --short=12 HEAD)"
 script:
-- sed s/libVersion.*/libVersion='"'$RELEASE_VERSION'"'/ build.gradle.kts > build.gradle.new
+- sed s/^'val libVersion.*'/'val libVersion'='"'$RELEASE_VERSION'"'/ build.gradle.kts > build.gradle.new
   && mv build.gradle.new build.gradle.kts
 - "./gradlew check"
 - "./gradlew build"
