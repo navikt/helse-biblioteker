@@ -11,10 +11,8 @@ before_install:
 - export RELEASE_VERSION="1.$(TZ="Europe/Oslo" date +%Y.%m.%d-%H.%M).$(git rev-parse
   --short=12 HEAD)"
 script:
-- sed s/^version.*/version='"'$RELEASE_VERSION'"'/ aktørregister-klient/build.gradle.kts > aktørregister-klient/build.gradle.new
-  && mv aktørregister-klient/build.gradle.new aktørregister-klient/build.gradle.kts
-- sed s/^version.*/version='"'$RELEASE_VERSION'"'/ sts-klient/build.gradle.kts > sts-klient/build.gradle.new
-  && mv sts-klient/build.gradle.new sts-klient/build.gradle.kts
+- sed s/libVersion.*/libVersion='"'$RELEASE_VERSION'"'/ build.gradle.kts > build.gradle.new
+  && mv build.gradle.new build.gradle.kts
 - "./gradlew check"
 - "./gradlew build"
 - |
